@@ -27,7 +27,7 @@ from math import sqrt
 from numpy import concatenate
 from sklearn.metrics import mean_squared_error
 
-# 시간측정
+# Time Measure
 start_time = time.time()
 
 # argument 
@@ -73,7 +73,7 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
 
 program_id = params 
 
-# 파라미터 정보 가져오기
+# Import Parameter
 paramdata = pd.read_csv('DA_INVEN_PROG_TRG3.csv')
 paramselect = paramdata[paramdata['PROGRAM_ID'] == params]
 
@@ -91,16 +91,16 @@ model_ym = paramselect['YM'] # 예측연월
 i = window_size
 j = 1488
 
-# 시작 시간
+# Start Time
 start_time = time.time()
 
-# 학습 데이터 가져오기 
+# Import Train data 
 dataset = pd.read_csv(params+'.csv')
-dataset['DATE'] = pd.to_datetime(dataset['DATE_TIME'],format="%Y-%m-%d %H:%M") # DATE 컬럼 추가 
-dataset.sort_values(by=['DATE'], axis=0, ascending=True,inplace=True) # DATE컬럼을 기준으로 정렬
-dataset= dataset.set_index('DATE') # DATE 컬럼을 인덱스로 지정 
-dataset = dataset[['INVEN']] # INVEN 컬럼만 dataset에 할당 
-dataset.index.name = 'date' # 인덱스 이름을 'date' 로 변경
+dataset['DATE'] = pd.to_datetime(dataset['DATE_TIME'],format="%Y-%m-%d %H:%M") 
+dataset.sort_values(by=['DATE'], axis=0, ascending=True,inplace=True) 
+dataset= dataset.set_index('DATE') 
+dataset = dataset[['INVEN']] 
+dataset.index.name = 'date' 
 dataset_inven = dataset[['INVEN']] 
 
 # ensure all data is float
@@ -114,11 +114,10 @@ scaled = scaler.fit_transform(values)
 # frame as supervised learning
 raw_reframed = series_to_supervised(scaled, i+j, 1)
 
-# shitf 하는 데이터의 첫 row만 가져오기(TETS셋 데이터 포함안되게 하기위해)
 # WINDOW 컬럼
 var_xx = raw_reframed.loc[:,:'var1(t-'+str(j)+')']
 
-# 라벨
+# Label
 var_yy = raw_reframed['var1(t)']
 
 # MERGE
@@ -128,10 +127,9 @@ raw_reframed = pd.concat([var_xx,var_yy], axis=1)
 reframed = raw_reframed
 # print(reframed.head(5))
 
-# train기간 설정: 실시간은 2시간 전 데이터만 학습 
-# 한국시간으로  
+ 
 
-# 현재시간 구하기 (현재시간 기준 1시간 전 데이터만 학습)
+# DateTime
 from datetime import datetime,timedelta 
 current_time = datetime.utcnow() + timedelta(hours=9)
 train_date_str = (current_time-timedelta(hours=2)).strftime("%Y%m%d%H")
@@ -161,8 +159,6 @@ train_time = time.time()-start_time
 print("Start! Predict Inventory")
 predict_date = (datetime.utcnow() + timedelta(hours=9)).strftime("%Y%m%d%H")
 print("Making Testing Data")
-
-# 예측 기간은 2달 후 예측 (2019053000,2019073023)
 
 #test데이터의 시작 일자 (현재일자) 
 from datetime import datetime,timedelta 
@@ -204,9 +200,9 @@ print('Test RMSE: %.3f' % rmse)
 mape = mean_absolute_percentage_error(Aarray_actual,Aarray_predicted) 
 print('Test MAPE: %.3f' % mape)
 MEAN = np.mean(Aarray_predicted)
-print('평균: %.3f' %MEAN)
+print('MEAN: %.3f' %MEAN)
 STD = np.std(Aarray_predicted)
-print('표준편차: %.3f' %STD)
+print('STD: %.3f' %STD)
 
 
 result = np.stack((Aarray_actual,Aarray_predicted), axis=1)
@@ -226,11 +222,9 @@ result_pd_res.to_csv('/home/ec2-user/utils/pred_result/'+program_id+'.csv', head
 print('Complete! Predict Invetory ')
 print('time:',time.time()-start_time)
 
-###분석 소요시간 체크
-
 #print('Time to prediction of Inven .. :',time.time()-start_time)
 
-## 학습 및 예측 시간 저장하기 
+
 #import pandas as pd 
 #train_df = pd.DataFrame({
 #    'programid':[program_id]
@@ -239,17 +233,3 @@ print('time:',time.time()-start_time)
 #    'train_time':[train_time]
 #})
 #train_df.to_csv('inven_train_S2_0521.csv', mode='a', header=False)
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
