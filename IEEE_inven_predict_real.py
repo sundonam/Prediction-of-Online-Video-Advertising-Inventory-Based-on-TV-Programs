@@ -77,16 +77,16 @@ program_id = params
 paramdata = pd.read_csv('DA_INVEN_PROG_TRG3.csv')
 paramselect = paramdata[paramdata['PROGRAM_ID'] == params]
 
-window_size = int(paramselect['WINDOW_SIZE']) # WINDOW_SIZE - WINDOW_SIZE 
-model_neuron = int(paramselect['MODEL_NEURON']) # MODE_NEURON 
-model_ep = int(paramselect['MODEL_EP']) # 반복횟수
-model_batchsize = int(paramselect['MODEL_BATCH']) # 배치횟수 
-model_dropout = float(paramselect['MODEL_DROPOUT']) # 드롭아웃
+window_size = int(paramselect['WINDOW_SIZE']) 
+model_neuron = int(paramselect['MODEL_NEURON']) 
+model_ep = int(paramselect['MODEL_EP']) 
+model_batchsize = int(paramselect['MODEL_BATCH'])  
+model_dropout = float(paramselect['MODEL_DROPOUT'])
 #model_dropout = 0.4
-model_activation =paramselect['MODEL_ACT'] # 활성화함수
-model_loss = paramselect['MODEL_LOSS'] # 손실함수 
-model_optimizer = paramselect['MODEL_OPT'] # 최적화함수 
-model_ym = paramselect['YM'] # 예측연월
+model_activation =paramselect['MODEL_ACT'] 
+model_loss = paramselect['MODEL_LOSS'] 
+model_optimizer = paramselect['MODEL_OPT'] 
+model_ym = paramselect['YM'] 
 
 i = window_size
 j = 1488
@@ -114,7 +114,7 @@ scaled = scaler.fit_transform(values)
 # frame as supervised learning
 raw_reframed = series_to_supervised(scaled, i+j, 1)
 
-# WINDOW 컬럼
+# WINDOW 
 var_xx = raw_reframed.loc[:,:'var1(t-'+str(j)+')']
 
 # Label
@@ -145,7 +145,7 @@ train_X = train_X.reshape((train_X.shape[0], 1, train_X.shape[1]))
 #print(train_X.shape, train_y.shape, test_X.shape, test_y.shape)
 
 # load_model
-#model = load_model('E:/00.WISE/SMR인벤예측_201905/model/J01_PR10010797.h5')
+#model = load_model
 model = load_model('/home/ec2-user/utils/MODEL_REAL/'+program_id+'.h5')
 model.fit(train_X, train_y, epochs=model_ep, batch_size=model_batchsize, verbose=2, shuffle=False) 
 early_stop = EarlyStopping(monitor='loss', patience=1, verbose=1)
@@ -160,7 +160,7 @@ print("Start! Predict Inventory")
 predict_date = (datetime.utcnow() + timedelta(hours=9)).strftime("%Y%m%d%H")
 print("Making Testing Data")
 
-#test데이터의 시작 일자 (현재일자) 
+#test data
 from datetime import datetime,timedelta 
 current_time = datetime.utcnow() + timedelta(hours=9)
 test_date_str = (current_time).strftime("%Y%m%d")
